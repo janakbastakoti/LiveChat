@@ -13,8 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.ekghanti.livechat.R
 
-import com.example.ekghanti_livechat_sdk.helper.Helper
-import com.example.ekghanti_livechat_sdk.model.chat.Message
+import com.ekghanti.livechat.helper.Helper
+import com.ekghanti.livechat.model.chat.Message
 import com.squareup.picasso.Picasso
 
 class ChatAdapter(

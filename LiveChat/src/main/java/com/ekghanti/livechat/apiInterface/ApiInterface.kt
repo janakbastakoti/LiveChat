@@ -1,6 +1,6 @@
 package com.ekghanti.livechat.apiInterface
 
-import com.example.ekghanti_livechat_sdk.model.chat.ChatData
+import com.ekghanti.livechat.model.chat.ChatData
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.GET
