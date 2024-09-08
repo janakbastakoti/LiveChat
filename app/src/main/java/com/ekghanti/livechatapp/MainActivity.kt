@@ -1,6 +1,8 @@
 package com.ekghanti.livechatapp
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,5 +18,26 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+
+        val btn1: Button = findViewById(R.id.btn1)
+        btn1.setOnClickListener {
+
+            val intent = Intent(this, PageOne::class.java)
+            startActivity(intent)
+
+
+        }
+
+        val btn2: Button = findViewById(R.id.btn2)
+        btn2.setOnClickListener {
+
+            val intent = Intent(this, PageTwo::class.java)
+            startActivity(intent)
+
+        }
+
+
+
     }
 }

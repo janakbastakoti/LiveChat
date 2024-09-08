@@ -7,4 +7,10 @@
     android:layout_height="match_parent"
     tools:context="com.ekghanti.livechatapp.PageOne">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/webviewlayout"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
