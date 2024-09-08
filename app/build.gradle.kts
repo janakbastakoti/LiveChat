@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.ekghanti.livechat"
+    namespace = "com.ekghanti.livechatapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ekghanti.livechat"
+        applicationId = "com.ekghanti.livechatapp"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

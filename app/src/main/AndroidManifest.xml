@@ -16,13 +16,13 @@
         android:theme="@style/Theme.LiveChat"
         tools:targetApi="31">
         <activity
-            android:name=".PageTwo"
+            android:name="com.ekghanti.livechatapp.PageTwo"
             android:exported="false" />
         <activity
-            android:name=".PageOne"
+            android:name="com.ekghanti.livechatapp.PageOne"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.ekghanti.livechatapp.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
