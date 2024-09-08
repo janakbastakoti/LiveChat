@@ -1,4 +1,4 @@
-package com.ekghanti.livechat
+package com.ekghanti.livechatapp
 
 import org.junit.Test
 
