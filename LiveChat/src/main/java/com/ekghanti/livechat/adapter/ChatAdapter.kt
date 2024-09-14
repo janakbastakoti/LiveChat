@@ -1,6 +1,6 @@
 package com.ekghanti.livechat.adapter
 //
-import android.app.Activity
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,7 @@ import com.ekghanti.livechat.model.chat.Message
 import com.squareup.picasso.Picasso
 
 class ChatAdapter(
-    val context: Activity,
+    val context: Context,
     val dataList: List<Message>,
     private val onButtonClick: (String) -> Unit
 ) :
