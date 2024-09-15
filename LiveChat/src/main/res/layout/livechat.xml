@@ -217,8 +217,8 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@null"
-                app:tint="@color/black"
-                android:src="@android:drawable/ic_menu_add" />
+                android:src="@android:drawable/ic_menu_add"
+                app:tint="@color/black" />
 
             <ImageButton
                 android:id="@+id/sendMessageButton"
