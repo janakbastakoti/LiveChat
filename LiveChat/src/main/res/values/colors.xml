@@ -16,4 +16,9 @@
     <color name="color4">#FF001A</color>
     <color name="endColor">#FF2200</color>
 
+
+    <color name="headerTitle">#a4a4a4</color>
+    <color name="backgroundColor">#e3e3e3</color>
+
+
 </resources>
