@@ -20,10 +20,14 @@ class PageTwo : AppCompatActivity() {
             insets
         }
 
+        val bundle = Bundle()
+        bundle.putString("channelId", "fd0caaa3-f1cb-4d0a-a452-171f21ec16ee")
+        val liveChatWebviewFragment = LiveChat()
+        liveChatWebviewFragment.arguments = bundle
 
         val fragmentManager = supportFragmentManager
         val fragmentTransction = fragmentManager.beginTransaction()
-        fragmentTransction.replace(R.id.livechatlayout, LiveChat())
+        fragmentTransction.replace(R.id.livechatlayout, liveChatWebviewFragment)
         fragmentTransction.commit()
 
     }

@@ -39,7 +39,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class LiveChat: Fragment(R.layout.livechat) {
-
+    private var channelId: String? = null
     private lateinit var webSocket: WebSocket
     private lateinit var myRecyclerView: RecyclerView
     private lateinit var myAdapter: ChatAdapter
@@ -63,6 +63,11 @@ class LiveChat: Fragment(R.layout.livechat) {
 
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
 
+        arguments?.let {
+            channelId = it.getString("channelId")
+        }
+
+        Log.e("clientt___0000", channelId.toString())
 
         val listener = WebSocketListener { newMessage ->
             requireActivity().runOnUiThread {
