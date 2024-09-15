@@ -1,6 +1,7 @@
 package com.ekghanti.livechat
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.webkit.WebView
 import androidx.fragment.app.Fragment
 
 class LiveChatWebview: Fragment(R.layout.livechat_webview) {
+    private var baseUrl: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -19,6 +21,12 @@ class LiveChatWebview: Fragment(R.layout.livechat_webview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        arguments?.let {
+            baseUrl = it.getString("BaseUrl")
+        }
+
+        Log.e("baseUrl", baseUrl.toString())
         // Initialize the WebView and set its settings
         val webView: WebView = view.findViewById(R.id.webView)
         val webSettings: WebSettings = webView.settings
@@ -29,7 +37,7 @@ class LiveChatWebview: Fragment(R.layout.livechat_webview) {
         webSettings.setSupportZoom(true)
 
         // Load the URL
-        webView.loadUrl("https://chat.orbit360.cx:8443/chat/fd0caaa3-f1cb-4d0a-a452-171f21ec16ee")
+        webView.loadUrl(baseUrl.toString())
     }
 
 }
