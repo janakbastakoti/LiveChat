@@ -20,9 +20,13 @@ class PageOne : AppCompatActivity() {
             insets
         }
 
+        val bundle = Bundle()
+        bundle.putString("BaseUrl", "https://chat.orbit360.cx:8443/chat/fd0caaa3-f1cb-4d0a-a452-171f21ec16ee")
+        val liveChatWebviewFragment = LiveChatWebview()
+        liveChatWebviewFragment.arguments = bundle
         val fragmentManager = supportFragmentManager
         val fragmentTransction = fragmentManager.beginTransaction()
-        fragmentTransction.replace(R.id.webviewlayout, LiveChatWebview())
+        fragmentTransction.replace(R.id.webviewlayout, liveChatWebviewFragment)
         fragmentTransction.commit()
 
 
