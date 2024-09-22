@@ -14,6 +14,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -40,6 +41,9 @@ import java.io.FileOutputStream
 
 class LiveChat: Fragment(R.layout.livechat) {
     private var channelId: String? = null
+    private var title: String? = null
+    private var subTitle: String? = null
+
     private lateinit var webSocket: WebSocket
     private lateinit var myRecyclerView: RecyclerView
     private lateinit var myAdapter: ChatAdapter
@@ -65,9 +69,28 @@ class LiveChat: Fragment(R.layout.livechat) {
 
         arguments?.let {
             channelId = it.getString("channelId")
+            title = it.getString("title")
+            subTitle = it.getString("subTitle")
+        }
+        val icon = arguments?.getInt("icon")
+
+        val titleView: TextView = view.findViewById(R.id.title)
+        val subTitleView: TextView = view.findViewById(R.id.subTitle)
+        val iconView: ImageView = view.findViewById(R.id.iconImage)
+//        iconView.setImageResource(icon)
+
+        if (icon != null) {
+            iconView.setImageResource(icon)
+        } else {
+            iconView.setImageResource(R.drawable.chat_icon)
         }
 
-        Log.e("clientt___0000", channelId.toString())
+        titleView.setText(title)
+        subTitleView.setText(subTitle)
+
+//        Log.e("clientt___0000", channelId.toString())
+//        Log.e("clientt___0000", title.toString())
+//        Log.e("clientt___0000", subTitle.toString())
 
         val listener = WebSocketListener { newMessage ->
             requireActivity().runOnUiThread {

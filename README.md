@@ -100,6 +100,9 @@ class MainActivity : AppCompatActivity() {
         // Initialize LiveChat with the channel ID
         val bundle = Bundle()
         bundle.putString("channelId", "YOUR CHATBOT CHANNEL ID") // Replace with your channel ID
+        bundle.putString("title", "CHAT_BOT_TITLE") // Replace with your title
+        bundle.putString("subTitle", "SUB_TITILE") // Replace with your subtitle
+        bundle.putInt("icon", R.drawable.YOUR_ICON)  // Replace with your icon
         val liveChatWebviewFragment = LiveChat()
         liveChatWebviewFragment.arguments = bundle
 

@@ -21,6 +21,9 @@ class PageTwo : AppCompatActivity() {
 
         val bundle = Bundle()
         bundle.putString("channelId", "fd0caaa3-f1cb-4d0a-a452-171f21ec16ee")
+        bundle.putString("title", "Chat Bot New")
+        bundle.putString("subTitle", "Hello world!")
+        bundle.putInt("icon", R.drawable.logo)
         val liveChatWebviewFragment = LiveChat()
         liveChatWebviewFragment.arguments = bundle
 
