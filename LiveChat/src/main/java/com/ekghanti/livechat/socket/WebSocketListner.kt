@@ -57,7 +57,8 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         val jsonString = helper.makeChatMessage(chatInstanceId, channelId, message, type)
         //Log.e("Heloo printing", "message is sent ${jsonString}")
         val appendMessage = gson.fromJson(jsonString.toString(), Message::class.java)
-        if(!isButton) onMessageReceived(appendMessage)
+        //if(!isButton)
+        onMessageReceived(appendMessage)
 
         val msg = JSONObject().apply {
             put("firstMsg", message)

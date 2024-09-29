@@ -66,7 +66,7 @@ class LiveChat: Fragment(R.layout.livechat) {
         super.onViewCreated(view, savedInstanceState)
 
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
-
+        //scrollView.isSmoothScrollingEnabled = true
         arguments?.let {
             channelId = it.getString("channelId")
             title = it.getString("title")
@@ -192,11 +192,13 @@ class LiveChat: Fragment(R.layout.livechat) {
 
     private fun setupRecyclerView(view: View, listener: WebSocketListener) {
         myRecyclerView = view.findViewById(R.id.recyclerView)
+        //myRecyclerView.
         myAdapter = ChatAdapter(requireContext(), messageList) { message ->
             listener.sendMessage(message, "text", isButton = true)
         }
         myRecyclerView.adapter = myAdapter
         myRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
     }
 
     private fun socketConnection(listener: WebSocketListener) {

@@ -80,6 +80,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="#ffffff"
+            android:scrollbars="none"
             android:padding="10dp">
 
             <LinearLayout

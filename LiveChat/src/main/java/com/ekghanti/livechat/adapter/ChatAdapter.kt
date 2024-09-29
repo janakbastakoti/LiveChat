@@ -158,7 +158,7 @@ class ChatAdapter(
 
             val subMsgAdapter = SubMsgAdapter(context, subMsg) { subMessage ->
                 // Handle button clicks or actions within SubMsg
-                Log.e("sub btn click", subMessage.toString())
+                onButtonClick(subMessage.toString())
             }
 
             // Setup the RecyclerView for sub messages

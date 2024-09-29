@@ -56,6 +56,10 @@ class SubMsgAdapter(
 
         Log.e("sub*******", currentData?.message.toString())
 
+        holder.subMsgBtn.setOnClickListener {
+            onButtonClick(currentData.message)
+        }
+
 
         if (currentData?.displayType == "button") {
             holder.subButtonArea.visibility = View.VISIBLE
