@@ -88,10 +88,6 @@ class LiveChat: Fragment(R.layout.livechat) {
         titleView.setText(title)
         subTitleView.setText(subTitle)
 
-//        Log.e("clientt___0000", channelId.toString())
-//        Log.e("clientt___0000", title.toString())
-//        Log.e("clientt___0000", subTitle.toString())
-
         val listener = WebSocketListener { newMessage ->
             requireActivity().runOnUiThread {
                 messageList.add(newMessage)

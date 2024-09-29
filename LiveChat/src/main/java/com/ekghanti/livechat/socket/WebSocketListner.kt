@@ -15,7 +15,7 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
     private var webSocketTemp: WebSocket? = null
     private val gson = Gson()
     private var chatInstanceId: String = ""
-    private var channelId = "fd0caaa3-f1cb-4d0a-a452-171f21ec16ee"
+    private var channelId = "772f2b31-14cd-431d-905b-bda1ab8292a0"
     private var userName = ""
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
