@@ -18,16 +18,17 @@
         <activity
             android:name=".ChatScreen"
             android:exported="false"
-            android:windowSoftInputMode="stateAlwaysHidden"
+            android:windowSoftInputMode="adjustResize"
             />
         <activity
             android:name=".PageTwo"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
              />
         <activity
             android:name=".PageOne"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

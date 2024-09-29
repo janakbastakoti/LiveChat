@@ -9,20 +9,24 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 
 import androidx.recyclerview.widget.RecyclerView
 import com.ekghanti.livechat.R
 
 import com.ekghanti.livechat.helper.Helper
 import com.ekghanti.livechat.model.chat.Message
+import com.ekghanti.livechat.model.chat.SubMessage
 import com.squareup.picasso.Picasso
 
+import org.json.JSONObject
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+
 class ChatAdapter(
-    val context: Context,
-    val dataList: List<Message>,
-    private val onButtonClick: (String) -> Unit
-) :
-    RecyclerView.Adapter<ChatAdapter.MyViewHolder>() {
+    val context: Context, val dataList: List<Message>, private val onButtonClick: (String) -> Unit
+) : RecyclerView.Adapter<ChatAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //other message
         val otherMsgArea: LinearLayout
@@ -38,6 +42,11 @@ class ChatAdapter(
         val buttonArea: LinearLayout
         val msgBtn: Button
         val btnTimestamp: TextView
+
+        //        group
+        val groupView: LinearLayout
+        val groupTimestamp: TextView
+        val subMsgRecyclerView: RecyclerView
 
         init {
             //other message
@@ -61,6 +70,11 @@ class ChatAdapter(
             msgBtn = itemView.findViewById(R.id.msgBtn)
             btnTimestamp = itemView.findViewById(R.id.btnTimestamp)
 
+            // group
+            groupView = itemView.findViewById(R.id.groupView)
+            groupTimestamp = itemView.findViewById(R.id.groupTimestamp)
+            subMsgRecyclerView = itemView.findViewById(R.id.subMsgRecyclerView)
+
         }
 
     }
@@ -76,10 +90,12 @@ class ChatAdapter(
 
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val gson = Gson()
         val currentData = dataList[position]
         val helper = Helper()
         val timestamp = currentData.timestamp.toLong()!! // Example: 2 days ago
         val timeAgo = helper.formatTimestamp(timestamp)
+
 
         Log.e("currentData:::777", currentData.toString())
 
@@ -94,12 +110,8 @@ class ChatAdapter(
                 holder.otherMsgArea.visibility = View.VISIBLE
 
                 holder.otherMsg.text = currentData?.chatMessage?.message
-
                 holder.otherMsg.visibility = View.VISIBLE
-
-
                 holder.otherTimestamp.text = timeAgo
-
 
             } else {
                 holder.myMsgArea.visibility = View.VISIBLE
@@ -117,28 +129,49 @@ class ChatAdapter(
             holder.buttonArea.visibility = View.VISIBLE
             holder.msgBtn.text = currentData?.chatMessage?.message
             holder.btnTimestamp.text = timeAgo
+
         } else if (currentData?.chatMessage?.displayType == "image") {
             if (currentData?.chatMessage?.chatSide == "outgoing") {
                 holder.myMsgArea.visibility = View.GONE
                 holder.otherMsgArea.visibility = View.VISIBLE
 
-
                 holder.otherImgMsg.visibility = View.VISIBLE
-
                 Picasso.get().load(currentData?.chatMessage?.message).into(holder.otherImgMsg)
-
                 holder.otherTimestamp.text = timeAgo
             } else {
                 holder.myMsgArea.visibility = View.VISIBLE
                 holder.otherMsgArea.visibility = View.GONE
 
-
                 holder.myImgMsg.visibility = View.VISIBLE
-
                 Picasso.get().load(currentData?.chatMessage?.message).into(holder.myImgMsg)
-
                 holder.myTimestamp.text = timeAgo
             }
+        } else if (currentData?.chatMessage?.displayType == "group") {
+            holder.groupTimestamp.text = timeAgo
+            holder.groupView.visibility = View.VISIBLE
+//            Log.e("group", currentData?.chatMessage?.message.toString())
+
+            val listType = object : TypeToken<List<SubMessage>>() {}.type
+            val subMsg: List<SubMessage> =
+                gson.fromJson(currentData?.chatMessage?.message.toString(), listType)
+
+
+            val subMsgAdapter = SubMsgAdapter(context, subMsg) { subMessage ->
+                // Handle button clicks or actions within SubMsg
+                Log.e("sub btn click", subMessage.toString())
+            }
+
+            // Setup the RecyclerView for sub messages
+            holder.subMsgRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context) // or GridLayoutManager if needed
+                adapter = subMsgAdapter
+            }
+
+
+            // Print the parsed data
+//            subMsg.forEach { println(it) }
+
+
         }
 
 

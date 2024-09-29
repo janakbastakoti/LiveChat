@@ -5,3 +5,8 @@ data class ChatMessage(
     val displayType: String,
     val message: String
 )
+
+sealed class ChatContent {
+    data class TextMessage(val text: String) : ChatContent()
+    data class ListMessage(val messages: List<SubMessage>) : ChatContent()
+}
