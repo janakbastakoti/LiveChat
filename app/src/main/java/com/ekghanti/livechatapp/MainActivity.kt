@@ -37,6 +37,14 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        val btn3: Button = findViewById(R.id.btn3)
+        btn3.setOnClickListener {
+
+            val intent = Intent(this, ChatScreen::class.java)
+            startActivity(intent)
+
+        }
+
 
 
     }

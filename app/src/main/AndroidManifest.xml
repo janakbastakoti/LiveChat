@@ -16,15 +16,20 @@
         android:theme="@style/Theme.LiveChat"
         tools:targetApi="31">
         <activity
-            android:name="com.ekghanti.livechatapp.PageTwo"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:name=".ChatScreen"
+            android:exported="false"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            />
         <activity
-            android:name="com.ekghanti.livechatapp.PageOne"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:name=".PageTwo"
+            android:exported="false"
+             />
         <activity
-            android:name="com.ekghanti.livechatapp.MainActivity"
+            android:name=".PageOne"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
