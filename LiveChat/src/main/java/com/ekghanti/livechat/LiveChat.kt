@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -24,13 +23,13 @@ import com.ekghanti.livechat.adapter.ChatAdapter
 import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.Message
 import com.example.ekghanti_livechat_sdk.socket.WebSocketListener
-import okhttp3.WebSocket
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.WebSocket
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -64,9 +63,12 @@ class LiveChat: Fragment(R.layout.livechat) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
         //scrollView.isSmoothScrollingEnabled = true
+
+        //editText.requestFocus()
+        //scrollView.postDelayed({ scrollView.fullScroll(View.FOCUS_DOWN) }, 100)
         arguments?.let {
             channelId = it.getString("channelId")
             title = it.getString("title")
