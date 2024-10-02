@@ -1,5 +1,6 @@
 package com.ekghanti.livechat
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ekghanti.livechat.adapter.ChatAdapter
 import com.ekghanti.livechat.apiInterface.ApiInterface
+import com.ekghanti.livechat.model.chat.ChatData
 import com.ekghanti.livechat.model.chat.Message
 import com.example.ekghanti_livechat_sdk.socket.WebSocketListener
 import com.squareup.picasso.Picasso
@@ -34,12 +36,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.File
 import java.io.FileOutputStream
 
-class LiveChat: Fragment(R.layout.livechat) {
+class LiveChat : Fragment(R.layout.livechat) {
     private var channelId: String? = null
+    private var userName: String? = ""
+    @Volatile
+    private var chatInstanceId: String? = ""
+
     private var title: String? = null
     private var subTitle: String? = null
 
@@ -63,12 +70,8 @@ class LiveChat: Fragment(R.layout.livechat) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
-        //scrollView.isSmoothScrollingEnabled = true
 
-        //editText.requestFocus()
-        //scrollView.postDelayed({ scrollView.fullScroll(View.FOCUS_DOWN) }, 100)
         arguments?.let {
             channelId = it.getString("channelId")
             title = it.getString("title")
@@ -90,25 +93,34 @@ class LiveChat: Fragment(R.layout.livechat) {
         titleView.setText(title)
         subTitleView.setText(subTitle)
 
-        val listener = WebSocketListener { newMessage ->
-            requireActivity().runOnUiThread {
-                messageList.add(newMessage)
-                myAdapter.notifyItemInserted(messageList.size - 1)
-                myRecyclerView.scrollToPosition(messageList.size - 1)
-                scrollView.post {
-                    scrollView.fullScroll(View.FOCUS_DOWN)
+        Log.e("local stored:::", getInstanceIdFromLocal().toString())
+
+        val listener = WebSocketListener(
+            { newMessage ->
+                requireActivity().runOnUiThread {
+                    messageList.add(newMessage)
+                    myAdapter.notifyItemInserted(messageList.size - 1)
+                    myRecyclerView.scrollToPosition(messageList.size - 1)
+                    scrollView.post {
+                        scrollView.fullScroll(View.FOCUS_DOWN)
+                    }
                 }
-            }
-        }
+            },
+            chatInstanceId = chatInstanceId.toString(),
+            //chatInstanceId = getInstanceIdFromLocal().toString(),
+            userName = userName.toString(),
+            channelId = channelId.toString(),
+            context = requireContext()
+        )
 
         socketConnection(listener)
         setupRecyclerView(view, listener)
 
         // Click me button
-//        val button: Button = view.findViewById(R.id.clickMeBtn)
-//        button.setOnClickListener {
-//            listener.onClickMe()
-//        }
+        //val button: Button = view.findViewById(R.id.clickMeBtn)
+        //button.setOnClickListener {
+        //    listener.onClickMe()
+        //}
 
 
 
@@ -129,6 +141,10 @@ class LiveChat: Fragment(R.layout.livechat) {
                     messageEditor.setText("")
                 }
             }
+
+            Log.e("channelId:::", channelId.toString())
+            Log.e("userName:::", userName.toString())
+            Log.e("chatInstanceId:::", chatInstanceId.toString())
         }
 
         // Image picker function
@@ -151,13 +167,13 @@ class LiveChat: Fragment(R.layout.livechat) {
         }
     }
 
-//    function to get file extension
+    //    function to get file extension
     private fun getFileExtensionFromUri(uri: Uri): String? {
         val mimeType = requireContext().contentResolver.getType(uri)
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
     }
 
-//  funtion to upload image
+    //  funtion to upload image
     private fun onUpload() {
         val fileDir = requireContext().filesDir
         val fileExtension = imageUri?.let { getFileExtensionFromUri(it) }
@@ -223,7 +239,38 @@ class LiveChat: Fragment(R.layout.livechat) {
     }
 
 
+    //function to api call
+    private fun loadData() {
+        val retrofitBuilder =
+            Retrofit.Builder().baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
+                .addConverterFactory(GsonConverterFactory.create()).build()
+                .create(ApiInterface::class.java)
 
+        val retrofitData = retrofitBuilder.getData()
 
+        retrofitData.enqueue(object : Callback<ChatData?> {
+            override fun onResponse(call: Call<ChatData?>, response: Response<ChatData?>) {
+                response.body()?.messages?.let { messages ->
+                    messageList.addAll(messages)  // Update the message list
+                    myAdapter.notifyDataSetChanged()  // Notify the adapter
+                }
+                //val datalist = response.body()?.messages!!;
+            }
+
+            override fun onFailure(call: Call<ChatData?>, p1: Throwable) {
+                //Toast.makeText(
+                //    this@LiveChat, "Failed to load data. Please try again.", Toast.LENGTH_SHORT
+                //).show()
+                //println("${p1} oneone this is error")
+            }
+        })
+
+    }
+
+    //get instanceId from local
+    private fun getInstanceIdFromLocal(): String? {
+        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("CHAT_INSTANCE_ID", "") ?: ""
+    }
 
 }

@@ -8,15 +8,25 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import  okhttp3.WebSocketListener
 import org.json.JSONObject
+import android.content.Context
 
 
-class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebSocketListener() {
+
+class WebSocketListener(
+    private val onMessageReceived: (Message) -> Unit,
+    private var chatInstanceId: String,
+    private var channelId: String,
+    private var userName: String,
+    private val context: Context
+) : WebSocketListener() {
 
     private var webSocketTemp: WebSocket? = null
     private val gson = Gson()
-    private var chatInstanceId: String = ""
-    private var channelId = "772f2b31-14cd-431d-905b-bda1ab8292a0"
-    private var userName = ""
+    //private var chatInstanceId: String = ""
+    //private var channelId = "772f2b31-14cd-431d-905b-bda1ab8292a0"
+    //Log.e("received:", channelId.toString())
+
+    //private var userName = ""
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         this.webSocketTemp = webSocket
@@ -29,6 +39,7 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         }
 //        chatInstanceId =
         Log.e("status", "socket is connected ${response.toString()} ${msg}")
+        Log.e("channelId::::", channelId)
         webSocket.send(msg.toString())
     }
 
@@ -36,9 +47,11 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         super.onMessage(webSocket, text)
         val message = gson.fromJson(text, Message::class.java)
         chatInstanceId = message?.instanceId.toString()
+        saveInstanceIdToLocal(chatInstanceId)
         userName = message?.destinationInfo?.userInfo?.usernameCookie.toString()
         onMessageReceived(message)
         Log.e("received", "message is received ${text}")
+        Log.e("update id", chatInstanceId.toString())
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -71,6 +84,8 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
 
         webSocketTemp?.send(msg.toString())
 
+        Log.e("msg json", msg.toString())
+
     }
 
     fun onClickMe() {
@@ -85,6 +100,14 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         }
         webSocketTemp?.send(msg.toString())
     }
+
+    private fun saveInstanceIdToLocal(instanceId: String?) {
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("CHAT_INSTANCE_ID", instanceId)
+        editor.apply()
+    }
+
 
 
 }
