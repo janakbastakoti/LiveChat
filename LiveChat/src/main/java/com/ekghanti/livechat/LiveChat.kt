@@ -136,11 +136,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         setupRecyclerView(view, listener)
         loadData(channelId.toString())
 
-        // Click me button
-        //val button: Button = view.findViewById(R.id.clickMeBtn)
-        //button.setOnClickListener {
-        //    listener.onClickMe()
-        //}
+
 
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -300,7 +296,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     //function to api call
     private fun loadData(id: String) {
-        Log.e("api call", "error entering...")
+        Log.e("api call", "error entering... ${id}")
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
             .addConverterFactory(GsonConverterFactory.create())
