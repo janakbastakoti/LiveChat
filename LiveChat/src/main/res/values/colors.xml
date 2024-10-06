@@ -3,10 +3,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="header">#ff2200</color>
-    <color name="myMsgBg">#d5d5d5</color>
-    <color name="myMsgTxt">#000000</color>
-    <color name="otherMsgBg">#4628d9</color>
-    <color name="otherMsgTxt">#ffffff</color>
+    <color name="myMsgBg">#E0FBC6</color>
+    <color name="myMsgTxt">#333333</color>
+    <color name="otherMsgBg">#F0F1F0</color>
+    <color name="otherMsgTxt">#333333</color>
 
 
     <color name="startColor">#020024</color>
@@ -15,6 +15,8 @@
     <color name="color3">#680077</color>
     <color name="color4">#FF001A</color>
     <color name="endColor">#FF2200</color>
+    <color name="like">#418107</color>
+
 
 
     <color name="headerTitle">#a4a4a4</color>

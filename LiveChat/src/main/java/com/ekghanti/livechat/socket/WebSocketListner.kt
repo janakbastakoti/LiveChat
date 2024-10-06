@@ -1,4 +1,4 @@
-package com.example.ekghanti_livechat_sdk.socket
+package com.ekghanti.livechat.socket
 
 import android.util.Log
 import com.ekghanti.livechat.helper.Helper
@@ -8,15 +8,19 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import  okhttp3.WebSocketListener
 import org.json.JSONObject
+import android.content.Context
 
 
-class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebSocketListener() {
+class WebSocketListener(
+    private val onMessageReceived: (Message) -> Unit,
+    private var chatInstanceId: String,
+    private var channelId: String,
+    private var userName: String,
+    private val context: Context
+) : WebSocketListener() {
 
     private var webSocketTemp: WebSocket? = null
     private val gson = Gson()
-    private var chatInstanceId: String = ""
-    private var channelId = "fd0caaa3-f1cb-4d0a-a452-171f21ec16ee"
-    private var userName = ""
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         this.webSocketTemp = webSocket
@@ -29,6 +33,7 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         }
 //        chatInstanceId =
         Log.e("status", "socket is connected ${response.toString()} ${msg}")
+        Log.e("channelId::::", channelId)
         webSocket.send(msg.toString())
     }
 
@@ -36,9 +41,11 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
         super.onMessage(webSocket, text)
         val message = gson.fromJson(text, Message::class.java)
         chatInstanceId = message?.instanceId.toString()
+        saveInstanceIdToLocal(chatInstanceId)
         userName = message?.destinationInfo?.userInfo?.usernameCookie.toString()
         onMessageReceived(message)
-        Log.e("received", "message is received ${text}")
+        //Log.e("received", "message is received ${text}")
+        //Log.e("update id", chatInstanceId.toString())
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -55,9 +62,10 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
 
         val helper = Helper()
         val jsonString = helper.makeChatMessage(chatInstanceId, channelId, message, type)
-        //Log.e("Heloo printing", "message is sent ${jsonString}")
+
         val appendMessage = gson.fromJson(jsonString.toString(), Message::class.java)
-        if(!isButton) onMessageReceived(appendMessage)
+
+        onMessageReceived(appendMessage)
 
         val msg = JSONObject().apply {
             put("firstMsg", message)
@@ -65,25 +73,35 @@ class WebSocketListener(private val onMessageReceived: (Message) -> Unit) : WebS
             put("message", message)
             put("chatInstanceId", chatInstanceId)
             put("channelID", channelId)
-            put("type", type)
+            put("type", if (type == "feedback") "text" else type)
         }
 
-        webSocketTemp?.send(msg.toString())
+
+        if (type == "feedback") {
+            closeWebSocket()
+        } else webSocketTemp?.send(msg.toString())
+
+
+        Log.e("msg json", msg.toString())
 
     }
 
-    fun onClickMe() {
-
-        val msg = JSONObject().apply {
-            put("firstMsg", "client")
-            put("usernameCookie", userName)
-            put("message", "Click Me")
-            put("chatInstanceId", chatInstanceId)
-            put("channelID", channelId)
-            put("type", "text")
+    fun closeWebSocket() {
+        try {
+            if (webSocketTemp != null) {
+                webSocketTemp?.close(1000, "Closing socket")
+                webSocketTemp = null // Clear the reference to avoid further use
+            }
+        } catch (e: Exception) {
+            println("Error closing WebSocket: ${e.message}")
         }
-        webSocketTemp?.send(msg.toString())
     }
 
+    private fun saveInstanceIdToLocal(instanceId: String?) {
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("CHAT_INSTANCE_ID", instanceId)
+        editor.apply()
+    }
 
 }

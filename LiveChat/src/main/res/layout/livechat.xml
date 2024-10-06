@@ -10,30 +10,6 @@
     android:paddingBottom="8dp"
     tools:context=".LiveChat">
 
-    <!-- old Header -->
-    <!--    <LinearLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_gravity="center"-->
-    <!--        android:background="@drawable/header_bg"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        android:paddingHorizontal="20dp"-->
-    <!--        android:paddingTop="30dp"-->
-    <!--        android:paddingBottom="20dp">-->
-
-    <!--        <TextView-->
-    <!--            android:id="@+id/textView3"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_marginTop="10dp"-->
-    <!--            android:text="Ekghanti Live Chat"-->
-    <!--            android:textColor="@android:color/white"-->
-    <!--            android:textSize="18sp"-->
-    <!--            android:textStyle="bold" />-->
-    <!--    </LinearLayout>-->
-    <!--    -->
-
-    <!-- New Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -79,6 +55,7 @@
     </LinearLayout>
 
 
+
     <!-- Input Field and Send Button -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -97,13 +74,16 @@
 
         <!-- Chat Messages Area -->
 
+
+
         <ScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="#ffffff"
-            android:padding="10dp">
+            android:padding="10dp"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,60 +108,9 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
-        <!--        old editor -->
-        <!--        <LinearLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:gravity="center_horizontal"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            android:paddingHorizontal="8dp"-->
-        <!--            android:paddingTop="8dp"-->
-        <!--            android:paddingBottom="20dp"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-
-        <!--            >-->
-
-        <!--            <ImageButton-->
-        <!--                android:id="@+id/addAttachment"-->
-        <!--                android:layout_width="36dp"-->
-        <!--                android:layout_height="36dp"-->
-        <!--                android:layout_gravity="bottom"-->
-        <!--                android:layout_marginRight="10dp"-->
-        <!--                android:background="@drawable/attachment"-->
-        <!--                android:contentDescription="Send" />-->
-
-        <!--            <EditText-->
-        <!--                android:id="@+id/editTextText"-->
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginEnd="10dp"-->
-        <!--                android:layout_weight="1"-->
-        <!--                android:background="@drawable/editor_border"-->
-        <!--                android:hint="Enter Message..."-->
-        <!--                android:inputType="textCapSentences|textMultiLine"-->
-        <!--                android:maxLines="4"-->
-        <!--                android:padding="9dp"-->
-        <!--                android:scrollbars="vertical"-->
-        <!--                android:textColor="#000000"-->
-        <!--                android:textColorHint="#595959"-->
-        <!--                android:textSize="16sp" />-->
-
-        <!--            <ImageButton-->
-        <!--                android:id="@+id/sendMessageButton"-->
-        <!--                android:layout_width="40dp"-->
-        <!--                android:layout_height="40dp"-->
-        <!--                android:layout_gravity="bottom"-->
-        <!--                android:background="@drawable/send_btn"-->
-        <!--                android:contentDescription="Send"-->
-        <!--                android:src="@android:drawable/ic_menu_send"-->
-        <!--                app:tint="@color/white" />-->
-        <!--        </LinearLayout>-->
-
-        <!--        new editor-->
 
         <LinearLayout
+            android:id="@+id/editorLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
@@ -193,7 +122,9 @@
             android:paddingVertical="4dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+
+            >
 
 
             <EditText

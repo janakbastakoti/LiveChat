@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+
+    >
+
+
+    <!--  BUTTON MSG  -->
+    <LinearLayout
+        android:id="@+id/subButtonArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="2dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/subMsgBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:background="@drawable/btn_border"
+
+            android:backgroundTintMode="src_over"
+            android:paddingHorizontal="15dp"
+            android:text=""
+            android:textColor="@color/white" />
+
+
+    </LinearLayout>
+
+
+    <!--    Text area-->
+    <LinearLayout
+        android:id="@+id/subMsgArea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="2dp">
+
+        <TextView
+            android:id="@+id/subMsgText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/otherMsgTxt"
+            android:textSize="14dp" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

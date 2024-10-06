@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="end"
@@ -13,23 +14,24 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="80dp"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:paddingVertical="6dp">
+        android:paddingVertical="6dp"
+        android:visibility="gone">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/msgBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
+            android:background="@drawable/btn_border"
             android:paddingHorizontal="15dp"
             android:paddingVertical="7dp"
             android:text="Click Me"
-            android:textColor="@color/black" />
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/btnTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:layout_gravity="end"
             android:text=""
             android:textColor="@color/black"
             android:textSize="10dp" />
@@ -46,8 +48,7 @@
         android:orientation="vertical"
         android:paddingHorizontal="15dp"
         android:paddingVertical="6dp"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/otherTextMsg"
@@ -56,27 +57,25 @@
             android:text=""
             android:textColor="@color/otherMsgTxt"
             android:textSize="14dp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/otherImgMsg"
             android:layout_width="200dp"
             android:layout_height="150dp"
-            android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:background="@drawable/image_border"
             android:clipToOutline="true"
             android:scaleType="centerCrop"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/otherTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_marginTop="4dp"
-            android:gravity="start"
             android:text=""
             android:textColor="@color/otherMsgTxt"
             android:textSize="10dp" />
@@ -94,19 +93,18 @@
         android:orientation="vertical"
         android:paddingHorizontal="15dp"
         android:paddingVertical="6dp"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/myImgMsg"
             android:layout_width="200dp"
             android:layout_height="150dp"
+            android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
             android:background="@drawable/image_border"
             android:clipToOutline="true"
-            android:visibility="gone"
-            android:layout_marginTop="4dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/myTextMsg"
@@ -114,18 +112,101 @@
             android:layout_height="wrap_content"
             android:text=""
             android:textColor="@color/myMsgTxt"
-            android:visibility="gone"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/myTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_marginTop="4dp"
-            android:gravity="start"
+            android:text=""
+            android:textColor="@color/myMsgTxt"
+            android:textSize="10dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <!-- Recycler view    -->
+
+    <LinearLayout
+        android:id="@+id/groupView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/border"
+        android:backgroundTint="@color/otherMsgBg"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="6dp"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subMsgRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/groupTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="5dp"
             android:text=""
             android:textColor="@color/myMsgTxt"
             android:textSize="10dp" />
     </LinearLayout>
+
+
+    <!-- feedback   -->
+    <LinearLayout
+        android:id="@+id/feedbackLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/border"
+        android:backgroundTint="@color/otherMsgBg"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="6dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/otherMsgTxt"
+            android:textSize="14dp"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/feedbackLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/otherMsgBg"
+                android:src="@drawable/thumb_up"
+                app:tint="@color/black" />
+
+            <ImageButton
+                android:id="@+id/feedbackDisLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/otherMsgBg"
+                android:src="@drawable/thumb_down"
+                app:tint="@color/black" />
+        </LinearLayout>
+
+    </LinearLayout>
+
 
 </RelativeLayout>
