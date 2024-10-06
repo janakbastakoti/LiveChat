@@ -3,6 +3,8 @@ package com.ekghanti.livechat
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,9 +20,13 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+//import android.widget.Toolbar
+//import android.widget.Toolbar
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,7 +41,9 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
 import okhttp3.WebSocket
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,6 +52,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.File
 import java.io.FileOutputStream
+
+import okhttp3.logging.HttpLoggingInterceptor
 
 class LiveChat : Fragment(R.layout.livechat) {
     private var channelId: String? = null
@@ -86,10 +96,12 @@ class LiveChat : Fragment(R.layout.livechat) {
         }
         val icon = arguments?.getInt("icon")
 
+        val actionBar = (activity as AppCompatActivity).supportActionBar
+        actionBar?.hide()
+
         val titleView: TextView = view.findViewById(R.id.title)
         val subTitleView: TextView = view.findViewById(R.id.subTitle)
         val iconView: ImageView = view.findViewById(R.id.iconImage)
-//        iconView.setImageResource(icon)
 
         if (icon != null) {
             iconView.setImageResource(icon)
@@ -100,7 +112,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         titleView.setText(title)
         subTitleView.setText(subTitle)
 
-        Log.e("local stored:::", getInstanceIdFromLocal().toString())
+        //Log.e("local stored:::", getInstanceIdFromLocal().toString())
 
         val listener = WebSocketListener(
             { newMessage ->
@@ -164,9 +176,6 @@ class LiveChat : Fragment(R.layout.livechat) {
                 }
             }
 
-            //Log.e("channelId:::", channelId.toString())
-            //Log.e("userName:::", userName.toString())
-            //Log.e("chatInstanceId:::", chatInstanceId.toString())
         }
 
         // Image picker function
@@ -189,7 +198,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         builder.setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
             // Dismiss the dialog when OK is clicked
             listener.sendMessage("Conversation Closed", "feedback")
-            val editorLayout: LinearLayout =  view.findViewById(R.id.editorLayout)
+            val editorLayout: LinearLayout = view.findViewById(R.id.editorLayout)
             editorLayout.visibility = View.GONE
             dialogInterface.dismiss()
         }
@@ -309,9 +318,56 @@ class LiveChat : Fragment(R.layout.livechat) {
                     //myAdapter.notifyDataSetChanged()  // Notify the adapter
                 }
             }
+
             override fun onFailure(call: Call<ChatData?>, p1: Throwable) {
                 Log.e("this is my:::::error", "error")
                 // Handle the failure
+            }
+        })
+    }
+
+
+    private fun sendMessageToApi(message: String) {
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiInterface::class.java)
+
+
+        // Create the request body
+        val messageRequest = JSONObject().apply {
+            put("feedback", "like")
+            put("instanceId", "772f2b31-14cd-431d-905b-bda1ab8292a0")
+            put("channel_id", "772f2b31-14cd-431d-905b-bda1ab8292a0")
+        }
+
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY // Log request and response body
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .build()
+
+        // Make the POST request
+        val retrofitData = retrofitBuilder.sendFeedback(messageRequest)
+
+        retrofitData.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                println("response sending message........")
+                if (response.isSuccessful) {
+                    // Handle success, e.g., notify the user or update the UI
+                    println("Message sent successfully: ${response.body()}")
+                } else {
+                    // Handle the case when the response is not successful
+                    println("Failed to send message: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                // Handle failure, e.g., show a Toast
+                println("Error sending message: ${t.message}")
             }
         })
     }
