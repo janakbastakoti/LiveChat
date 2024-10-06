@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,13 @@ class ChatAdapter(
         val groupTimestamp: TextView
         val subMsgRecyclerView: RecyclerView
 
+        //feedback
+        val feedbackLayout: LinearLayout
+        val feedback: TextView
+        val feedbackLike: ImageButton
+        val feedbackDisLike: ImageButton
+
+
         init {
             //other message
             otherTimestamp = itemView.findViewById(R.id.otherTimestamp)
@@ -75,6 +84,12 @@ class ChatAdapter(
             groupTimestamp = itemView.findViewById(R.id.groupTimestamp)
             subMsgRecyclerView = itemView.findViewById(R.id.subMsgRecyclerView)
 
+            //feedback
+            feedbackLayout = itemView.findViewById(R.id.feedbackLayout)
+            feedback = itemView.findViewById(R.id.feedback)
+            feedbackLike = itemView.findViewById(R.id.feedbackLike)
+            feedbackDisLike = itemView.findViewById(R.id.feedbackDisLike)
+
         }
 
     }
@@ -101,6 +116,28 @@ class ChatAdapter(
 
         holder.msgBtn.setOnClickListener {
             onButtonClick(currentData?.chatMessage?.message.toString())
+        }
+
+        holder.feedbackLike.setOnClickListener {
+            holder.feedbackLike.setColorFilter(
+                ContextCompat.getColor(context, R.color.like), // Replace with your desired color
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            holder.feedbackDisLike.setColorFilter(
+                ContextCompat.getColor(context, R.color.black), // Replace with your desired color
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
+        }
+
+        holder.feedbackDisLike.setOnClickListener {
+            holder.feedbackDisLike.setColorFilter(
+                ContextCompat.getColor(context, R.color.like), // Replace with your desired color
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
+            holder.feedbackLike.setColorFilter(
+                ContextCompat.getColor(context, R.color.black), // Replace with your desired color
+                android.graphics.PorterDuff.Mode.SRC_IN
+            )
         }
 
         if (currentData?.chatMessage?.displayType == "text") {
@@ -146,6 +183,11 @@ class ChatAdapter(
                 Picasso.get().load(currentData?.chatMessage?.message).into(holder.myImgMsg)
                 holder.myTimestamp.text = timeAgo
             }
+        } else if (currentData?.chatMessage?.displayType == "feedback") {
+            holder.feedbackLayout.visibility = View.VISIBLE
+            holder.feedback.text =
+                "Thank you for the chat! Your reviews help us grow. Do you like our service?"
+
         } else if (currentData?.chatMessage?.displayType == "group") {
             holder.groupTimestamp.text = timeAgo
             holder.groupView.visibility = View.VISIBLE

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="end"
@@ -20,10 +21,10 @@
             android:id="@+id/msgBtn"
             android:layout_width="wrap_content"
             android:layout_height="35dp"
+            android:background="@drawable/btn_border"
             android:paddingHorizontal="15dp"
             android:paddingVertical="7dp"
             android:text="Click Me"
-            android:background="@drawable/btn_border"
             android:textColor="@color/white" />
 
         <TextView
@@ -73,8 +74,8 @@
             android:id="@+id/otherTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_gravity="end"
+            android:layout_marginTop="4dp"
             android:text=""
             android:textColor="@color/otherMsgTxt"
             android:textSize="10dp" />
@@ -118,8 +119,8 @@
             android:id="@+id/myTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_gravity="end"
+            android:layout_marginTop="4dp"
             android:text=""
             android:textColor="@color/myMsgTxt"
             android:textSize="10dp" />
@@ -146,22 +147,18 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/subMsgRecyclerView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/groupTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-
+            android:layout_marginTop="5dp"
             android:text=""
             android:textColor="@color/myMsgTxt"
-            android:layout_marginTop="5dp"
             android:textSize="10dp" />
     </LinearLayout>
-
 
 
     <!-- feedback   -->
@@ -189,28 +186,27 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center"
-            >
+            android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1"
-                android:src="@drawable/thumb_u" />
+                android:id="@+id/feedbackLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/otherMsgBg"
+                android:src="@drawable/thumb_up"
+                app:tint="@color/black" />
 
             <ImageButton
-                android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:src="@drawable/thumb_d" />
+                android:id="@+id/feedbackDisLike"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/otherMsgBg"
+                android:src="@drawable/thumb_down"
+                app:tint="@color/black" />
         </LinearLayout>
 
     </LinearLayout>
-
 
 
 </RelativeLayout>

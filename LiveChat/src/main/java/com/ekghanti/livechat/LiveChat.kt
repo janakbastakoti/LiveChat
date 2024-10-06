@@ -1,6 +1,7 @@
 package com.ekghanti.livechat
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -17,6 +18,7 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,6 +47,7 @@ import java.io.FileOutputStream
 class LiveChat : Fragment(R.layout.livechat) {
     private var channelId: String? = null
     private var userName: String? = ""
+
     @Volatile
     private var chatInstanceId: String? = ""
 
@@ -118,6 +121,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
         socketConnection(listener)
         setupRecyclerView(view, listener)
+        loadData(channelId.toString())
 
         // Click me button
         //val button: Button = view.findViewById(R.id.clickMeBtn)
@@ -126,23 +130,19 @@ class LiveChat : Fragment(R.layout.livechat) {
         //}
 
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
 
-                if(backPressCount == 0) {
-                    backPressCount = 1
-                    Toast.makeText(requireContext(), "Back button pressed in Fragment!", Toast.LENGTH_SHORT).show()
-                }else {
-                    //requireActivity().onBackPressedDispatcher.onBackPressed()
-                    requireActivity().finish()
+                    if (backPressCount == 0) {
+                        backPressCount = 1
+                        showModalDialog(listener)
+                    } else {
+                        requireActivity().finish()
+                    }
                 }
-
-                Log.e("back pressed", "onenene ${backPressCount}")
-                // Call your function when the back button is pressed
-                //onBackPressedFunction()
-            }
-        })
-
+            })
 
 
         // Send message button click
@@ -163,9 +163,9 @@ class LiveChat : Fragment(R.layout.livechat) {
                 }
             }
 
-            Log.e("channelId:::", channelId.toString())
-            Log.e("userName:::", userName.toString())
-            Log.e("chatInstanceId:::", chatInstanceId.toString())
+            //Log.e("channelId:::", channelId.toString())
+            //Log.e("userName:::", userName.toString())
+            //Log.e("chatInstanceId:::", chatInstanceId.toString())
         }
 
         // Image picker function
@@ -174,6 +174,32 @@ class LiveChat : Fragment(R.layout.livechat) {
             openGallery()
         }
 
+    }
+
+    private fun showModalDialog(listener: WebSocketListener) {
+        // Create an AlertDialog Builder
+        val builder = AlertDialog.Builder(requireContext())
+
+        // Set the title and message of the modal dialog
+        builder.setTitle("Alert")
+        builder.setMessage("Are you sure you want to close the conversation ?")
+
+        // Add an action button
+        builder.setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
+            // Dismiss the dialog when OK is clicked
+            listener.sendMessage("Conversation Closed", "feedback")
+            dialogInterface.dismiss()
+        }
+
+        // Optionally, you can add a cancel button too
+        builder.setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
+            // Dismiss the dialog when Cancel is clicked
+            dialogInterface.dismiss()
+        }
+
+        // Create and show the dialog
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -261,36 +287,36 @@ class LiveChat : Fragment(R.layout.livechat) {
 
 
     //function to api call
-    private fun loadData() {
-        val retrofitBuilder =
-            Retrofit.Builder().baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
-                .addConverterFactory(GsonConverterFactory.create()).build()
-                .create(ApiInterface::class.java)
+    private fun loadData(id: String) {
+        Log.e("api call", "error entering...")
+        val retrofitBuilder = Retrofit.Builder()
+            .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiInterface::class.java)
 
-        val retrofitData = retrofitBuilder.getData()
+        // Pass the dynamic ID to the API call
+        val retrofitData = retrofitBuilder.getData(id)
 
         retrofitData.enqueue(object : Callback<ChatData?> {
             override fun onResponse(call: Call<ChatData?>, response: Response<ChatData?>) {
                 response.body()?.messages?.let { messages ->
-                    messageList.addAll(messages)  // Update the message list
-                    myAdapter.notifyDataSetChanged()  // Notify the adapter
+                    Log.e("this is my:::::", messages.toString())
+                    //messageList.addAll(messages)  // Update the message list
+                    //myAdapter.notifyDataSetChanged()  // Notify the adapter
                 }
-                //val datalist = response.body()?.messages!!;
             }
-
             override fun onFailure(call: Call<ChatData?>, p1: Throwable) {
-                //Toast.makeText(
-                //    this@LiveChat, "Failed to load data. Please try again.", Toast.LENGTH_SHORT
-                //).show()
-                //println("${p1} oneone this is error")
+                Log.e("this is my:::::error", "error")
+                // Handle the failure
             }
         })
-
     }
 
     //get instanceId from local
     private fun getInstanceIdFromLocal(): String? {
-        val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("CHAT_INSTANCE_ID", "") ?: ""
     }
 

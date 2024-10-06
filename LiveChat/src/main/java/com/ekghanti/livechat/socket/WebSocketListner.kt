@@ -11,7 +11,6 @@ import org.json.JSONObject
 import android.content.Context
 
 
-
 class WebSocketListener(
     private val onMessageReceived: (Message) -> Unit,
     private var chatInstanceId: String,
@@ -68,9 +67,9 @@ class WebSocketListener(
 
         val helper = Helper()
         val jsonString = helper.makeChatMessage(chatInstanceId, channelId, message, type)
-        //Log.e("Heloo printing", "message is sent ${jsonString}")
+
         val appendMessage = gson.fromJson(jsonString.toString(), Message::class.java)
-        //if(!isButton)
+
         onMessageReceived(appendMessage)
 
         val msg = JSONObject().apply {
@@ -79,10 +78,12 @@ class WebSocketListener(
             put("message", message)
             put("chatInstanceId", chatInstanceId)
             put("channelID", channelId)
-            put("type", type)
+            put("type", if (type == "feedback") "text" else type)
         }
 
-        webSocketTemp?.send(msg.toString())
+        if (type == "feedback") closeWebSocket()
+
+        if (!isButton) webSocketTemp?.send(msg.toString())
 
         Log.e("msg json", msg.toString())
 
@@ -101,13 +102,23 @@ class WebSocketListener(
         webSocketTemp?.send(msg.toString())
     }
 
+    fun closeWebSocket() {
+        try {
+            if (webSocketTemp != null) {
+                webSocketTemp?.close(1000, "Closing socket")
+                webSocketTemp = null // Clear the reference to avoid further use
+            }
+        } catch (e: Exception) {
+            println("Error closing WebSocket: ${e.message}")
+        }
+    }
+
     private fun saveInstanceIdToLocal(instanceId: String?) {
         val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("CHAT_INSTANCE_ID", instanceId)
         editor.apply()
     }
-
 
 
 }
