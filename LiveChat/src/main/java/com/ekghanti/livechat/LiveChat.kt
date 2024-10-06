@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,6 +60,8 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     private var imageUri: Uri? = null
     private var uploadedUrl: String? = null
+
+    private var backPressCount: Number? = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,6 +124,24 @@ class LiveChat : Fragment(R.layout.livechat) {
         //button.setOnClickListener {
         //    listener.onClickMe()
         //}
+
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                if(backPressCount == 0) {
+                    backPressCount = 1
+                    Toast.makeText(requireContext(), "Back button pressed in Fragment!", Toast.LENGTH_SHORT).show()
+                }else {
+                    //requireActivity().onBackPressedDispatcher.onBackPressed()
+                    requireActivity().finish()
+                }
+
+                Log.e("back pressed", "onenene ${backPressCount}")
+                // Call your function when the back button is pressed
+                //onBackPressedFunction()
+            }
+        })
 
 
 

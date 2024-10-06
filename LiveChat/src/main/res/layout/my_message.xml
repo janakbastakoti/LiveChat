@@ -163,4 +163,54 @@
     </LinearLayout>
 
 
+
+    <!-- feedback   -->
+    <LinearLayout
+        android:id="@+id/feedbackLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:background="@drawable/border"
+        android:backgroundTint="@color/otherMsgBg"
+        android:orientation="vertical"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="6dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/otherMsgTxt"
+            android:textSize="14dp"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:src="@drawable/thumb_u" />
+
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:src="@drawable/thumb_d" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
 </RelativeLayout>

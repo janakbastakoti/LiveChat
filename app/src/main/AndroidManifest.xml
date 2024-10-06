@@ -23,12 +23,12 @@
         <activity
             android:name=".PageTwo"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
              />
         <activity
             android:name=".PageOne"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
