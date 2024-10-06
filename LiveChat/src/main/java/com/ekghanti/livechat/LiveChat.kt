@@ -14,6 +14,7 @@ import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -137,7 +138,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
                     if (backPressCount == 0) {
                         backPressCount = 1
-                        showModalDialog(listener)
+                        showModalDialog(listener, view)
                     } else {
                         requireActivity().finish()
                     }
@@ -176,7 +177,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     }
 
-    private fun showModalDialog(listener: WebSocketListener) {
+    private fun showModalDialog(listener: WebSocketListener, view: View) {
         // Create an AlertDialog Builder
         val builder = AlertDialog.Builder(requireContext())
 
@@ -188,6 +189,8 @@ class LiveChat : Fragment(R.layout.livechat) {
         builder.setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
             // Dismiss the dialog when OK is clicked
             listener.sendMessage("Conversation Closed", "feedback")
+            val editorLayout: LinearLayout =  view.findViewById(R.id.editorLayout)
+            editorLayout.visibility = View.GONE
             dialogInterface.dismiss()
         }
 
