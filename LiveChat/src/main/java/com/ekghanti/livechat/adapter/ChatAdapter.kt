@@ -191,7 +191,6 @@ class ChatAdapter(
         } else if (currentData?.chatMessage?.displayType == "group") {
             holder.groupTimestamp.text = timeAgo
             holder.groupView.visibility = View.VISIBLE
-//            Log.e("group", currentData?.chatMessage?.message.toString())
 
             val listType = object : TypeToken<List<SubMessage>>() {}.type
             val subMsg: List<SubMessage> =
@@ -208,10 +207,6 @@ class ChatAdapter(
                 layoutManager = LinearLayoutManager(context) // or GridLayoutManager if needed
                 adapter = subMsgAdapter
             }
-
-
-            // Print the parsed data
-//            subMsg.forEach { println(it) }
 
 
         }

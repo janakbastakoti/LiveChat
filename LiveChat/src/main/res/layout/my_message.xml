@@ -169,7 +169,9 @@
         android:layout_marginEnd="80dp"
         android:background="@drawable/border"
         android:backgroundTint="@color/otherMsgBg"
+        android:layout_centerInParent="true"
         android:orientation="vertical"
+        android:layout_marginTop="10dp"
         android:paddingHorizontal="15dp"
         android:paddingVertical="6dp"
         android:visibility="gone">
