@@ -34,7 +34,7 @@ import com.ekghanti.livechat.adapter.ChatAdapter
 import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.ChatData
 import com.ekghanti.livechat.model.chat.Message
-import com.example.ekghanti_livechat_sdk.socket.WebSocketListener
+import com.ekghanti.livechat.socket.WebSocketListener
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

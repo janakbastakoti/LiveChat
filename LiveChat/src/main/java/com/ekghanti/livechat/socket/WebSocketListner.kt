@@ -1,4 +1,4 @@
-package com.example.ekghanti_livechat_sdk.socket
+package com.ekghanti.livechat.socket
 
 import android.util.Log
 import com.ekghanti.livechat.helper.Helper
@@ -21,11 +21,6 @@ class WebSocketListener(
 
     private var webSocketTemp: WebSocket? = null
     private val gson = Gson()
-    //private var chatInstanceId: String = ""
-    //private var channelId = "772f2b31-14cd-431d-905b-bda1ab8292a0"
-    //Log.e("received:", channelId.toString())
-
-    //private var userName = ""
     override fun onOpen(webSocket: WebSocket, response: Response) {
         super.onOpen(webSocket, response)
         this.webSocketTemp = webSocket
@@ -49,8 +44,8 @@ class WebSocketListener(
         saveInstanceIdToLocal(chatInstanceId)
         userName = message?.destinationInfo?.userInfo?.usernameCookie.toString()
         onMessageReceived(message)
-        Log.e("received", "message is received ${text}")
-        Log.e("update id", chatInstanceId.toString())
+        //Log.e("received", "message is received ${text}")
+        //Log.e("update id", chatInstanceId.toString())
     }
 
     override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -81,25 +76,14 @@ class WebSocketListener(
             put("type", if (type == "feedback") "text" else type)
         }
 
-        if (type == "feedback") closeWebSocket()
 
-        if (!isButton) webSocketTemp?.send(msg.toString())
+        if (type == "feedback") {
+            closeWebSocket()
+        } else webSocketTemp?.send(msg.toString())
+
 
         Log.e("msg json", msg.toString())
 
-    }
-
-    fun onClickMe() {
-
-        val msg = JSONObject().apply {
-            put("firstMsg", "client")
-            put("usernameCookie", userName)
-            put("message", "Click Me")
-            put("chatInstanceId", chatInstanceId)
-            put("channelID", channelId)
-            put("type", "text")
-        }
-        webSocketTemp?.send(msg.toString())
     }
 
     fun closeWebSocket() {
@@ -119,6 +103,5 @@ class WebSocketListener(
         editor.putString("CHAT_INSTANCE_ID", instanceId)
         editor.apply()
     }
-
 
 }
