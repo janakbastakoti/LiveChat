@@ -141,75 +141,95 @@ class ChatAdapter(
         }
 
         if (currentData?.chatMessage?.displayType == "text") {
+            // Hide other views
             holder.buttonArea.visibility = View.GONE
+            holder.otherMsgArea.visibility = View.GONE
+            holder.myMsgArea.visibility = View.GONE
+            holder.feedbackLayout.visibility = View.GONE
+            holder.groupView.visibility = View.GONE
+
+            // Show text message
             if (currentData?.chatMessage?.chatSide == "outgoing") {
                 holder.myMsgArea.visibility = View.GONE
                 holder.otherMsgArea.visibility = View.VISIBLE
-
                 holder.otherMsg.text = currentData?.chatMessage?.message
                 holder.otherMsg.visibility = View.VISIBLE
                 holder.otherTimestamp.text = timeAgo
-
             } else {
                 holder.myMsgArea.visibility = View.VISIBLE
                 holder.otherMsgArea.visibility = View.GONE
-
-
                 holder.myMsg.visibility = View.VISIBLE
                 holder.myMsg.text = currentData?.chatMessage?.message
-
                 holder.myTimestamp.text = timeAgo
             }
         } else if (currentData?.chatMessage?.displayType == "button") {
-            holder.otherMsgArea.visibility = View.GONE
+            // Hide other views
             holder.myMsgArea.visibility = View.GONE
+            holder.otherMsgArea.visibility = View.GONE
+            holder.feedbackLayout.visibility = View.GONE
+            holder.groupView.visibility = View.GONE
+
+            // Show button message
             holder.buttonArea.visibility = View.VISIBLE
             holder.msgBtn.text = currentData?.chatMessage?.message
             holder.btnTimestamp.text = timeAgo
-
         } else if (currentData?.chatMessage?.displayType == "image") {
+            // Hide other views
+            holder.buttonArea.visibility = View.GONE
+            holder.otherMsgArea.visibility = View.GONE
+            holder.myMsgArea.visibility = View.GONE
+            holder.feedbackLayout.visibility = View.GONE
+            holder.groupView.visibility = View.GONE
+
+            // Show image message
             if (currentData?.chatMessage?.chatSide == "outgoing") {
                 holder.myMsgArea.visibility = View.GONE
                 holder.otherMsgArea.visibility = View.VISIBLE
-
                 holder.otherImgMsg.visibility = View.VISIBLE
                 Picasso.get().load(currentData?.chatMessage?.message).into(holder.otherImgMsg)
                 holder.otherTimestamp.text = timeAgo
             } else {
                 holder.myMsgArea.visibility = View.VISIBLE
                 holder.otherMsgArea.visibility = View.GONE
-
                 holder.myImgMsg.visibility = View.VISIBLE
                 Picasso.get().load(currentData?.chatMessage?.message).into(holder.myImgMsg)
                 holder.myTimestamp.text = timeAgo
             }
         } else if (currentData?.chatMessage?.displayType == "feedback") {
-            holder.feedbackLayout.visibility = View.VISIBLE
-            holder.feedback.text =
-                "Thank you for the chat! Your reviews help us grow. Do you like our service?"
+            // Hide other views
+            holder.buttonArea.visibility = View.GONE
+            holder.myMsgArea.visibility = View.GONE
+            holder.otherMsgArea.visibility = View.GONE
+            holder.groupView.visibility = View.GONE
 
+            // Show feedback message
+            holder.feedbackLayout.visibility = View.VISIBLE
+            holder.feedback.text = "Thank you for the chat! Your reviews help us grow. Do you like our service?"
         } else if (currentData?.chatMessage?.displayType == "group") {
-            holder.groupTimestamp.text = timeAgo
+            // Hide other views
+            holder.buttonArea.visibility = View.GONE
+            holder.myMsgArea.visibility = View.GONE
+            holder.otherMsgArea.visibility = View.GONE
+            holder.feedbackLayout.visibility = View.GONE
+
+            // Show group message
             holder.groupView.visibility = View.VISIBLE
+            holder.groupTimestamp.text = timeAgo
 
             val listType = object : TypeToken<List<SubMessage>>() {}.type
-            val subMsg: List<SubMessage> =
-                gson.fromJson(currentData?.chatMessage?.message.toString(), listType)
-
+            val subMsg: List<SubMessage> = gson.fromJson(currentData?.chatMessage?.message.toString(), listType)
 
             val subMsgAdapter = SubMsgAdapter(context, subMsg) { subMessage ->
-                // Handle button clicks or actions within SubMsg
                 onButtonClick(subMessage.toString())
             }
 
-            // Setup the RecyclerView for sub messages
+            // Setup RecyclerView for sub messages
             holder.subMsgRecyclerView.apply {
-                layoutManager = LinearLayoutManager(context) // or GridLayoutManager if needed
+                layoutManager = LinearLayoutManager(context)
                 adapter = subMsgAdapter
             }
-
-
         }
+
 
 
     }

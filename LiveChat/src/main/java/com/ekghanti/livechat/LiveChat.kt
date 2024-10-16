@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.ImageButton
@@ -27,6 +28,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -88,6 +90,7 @@ class LiveChat : Fragment(R.layout.livechat) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
+        val messageEditor: EditText = view.findViewById(R.id.editTextText)
 
         arguments?.let {
             channelId = it.getString("channelId")
@@ -120,10 +123,18 @@ class LiveChat : Fragment(R.layout.livechat) {
                     messageList.add(newMessage)
                     myAdapter.notifyItemInserted(messageList.size - 1)
                     myRecyclerView.scrollToPosition(messageList.size - 1)
+
                     scrollView.post {
                         scrollView.fullScroll(View.FOCUS_DOWN)
                     }
+
+                    messageEditor.postDelayed({
+                        messageEditor.requestFocus()
+
+                    }, 100)
+
                 }
+
             },
             chatInstanceId = chatInstanceId.toString(),
             //chatInstanceId = getInstanceIdFromLocal().toString(),
@@ -156,7 +167,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
         // Send message button click
         val sendButton: ImageButton = view.findViewById(R.id.sendMessageButton)
-        val messageEditor: EditText = view.findViewById(R.id.editTextText)
+
         sendButton.setOnClickListener {
             val textMsg = messageEditor.text.toString()
             val pickedImage: ImageView = view.findViewById(R.id.imageView)
@@ -170,6 +181,8 @@ class LiveChat : Fragment(R.layout.livechat) {
                     messageEditor.requestFocus()
                     messageEditor.setText("")
                 }
+
+
             }
 
         }
