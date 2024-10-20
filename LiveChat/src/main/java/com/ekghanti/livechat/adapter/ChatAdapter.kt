@@ -27,7 +27,11 @@ import com.google.gson.reflect.TypeToken
 
 
 class ChatAdapter(
-    val context: Context, val dataList: List<Message>, private val onButtonClick: (String) -> Unit
+    val context: Context,
+    val dataList: List<Message>,
+    private val onButtonClick: (String) -> Unit,
+    //private val onLikeClick: () -> Unit,
+    //private val onDisLikeClick: () -> Unit
 ) : RecyclerView.Adapter<ChatAdapter.MyViewHolder>() {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         //other message
@@ -127,6 +131,8 @@ class ChatAdapter(
                 ContextCompat.getColor(context, R.color.black), // Replace with your desired color
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
+            onButtonClick("Like");
+
         }
 
         holder.feedbackDisLike.setOnClickListener {
@@ -138,6 +144,7 @@ class ChatAdapter(
                 ContextCompat.getColor(context, R.color.black), // Replace with your desired color
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
+            onButtonClick("DisLike");
         }
 
         if (currentData?.chatMessage?.displayType == "text") {
@@ -204,7 +211,8 @@ class ChatAdapter(
 
             // Show feedback message
             holder.feedbackLayout.visibility = View.VISIBLE
-            holder.feedback.text = "Thank you for the chat! Your reviews help us grow. Do you like our service?"
+            holder.feedback.text =
+                "Thank you for the chat! Your reviews help us grow. Do you like our service?"
         } else if (currentData?.chatMessage?.displayType == "group") {
             // Hide other views
             holder.buttonArea.visibility = View.GONE
@@ -217,7 +225,8 @@ class ChatAdapter(
             holder.groupTimestamp.text = timeAgo
 
             val listType = object : TypeToken<List<SubMessage>>() {}.type
-            val subMsg: List<SubMessage> = gson.fromJson(currentData?.chatMessage?.message.toString(), listType)
+            val subMsg: List<SubMessage> =
+                gson.fromJson(currentData?.chatMessage?.message.toString(), listType)
 
             val subMsgAdapter = SubMsgAdapter(context, subMsg) { subMessage ->
                 onButtonClick(subMessage.toString())
@@ -229,7 +238,6 @@ class ChatAdapter(
                 adapter = subMsgAdapter
             }
         }
-
 
 
     }

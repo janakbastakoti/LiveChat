@@ -63,7 +63,7 @@ class LiveChat : Fragment(R.layout.livechat) {
     private var userName: String? = ""
 
     @Volatile
-    private var chatInstanceId: String? = ""
+    private var chatInstanceId: String? = "772f2b31-14cd-431d-905b-bda1ab8292a0"
 
     private var title: String? = null
     private var subTitle: String? = null
@@ -121,7 +121,10 @@ class LiveChat : Fragment(R.layout.livechat) {
                 requireActivity().runOnUiThread {
                     //    show gif loader
                     Log.e("on arrive", newMessage.chatMessage.chatSide.toString())
-                    if(newMessage.chatMessage.chatSide.toString() != "incoming") showLoader(view, false)
+                    if (newMessage.chatMessage.chatSide.toString() != "incoming") showLoader(
+                        view,
+                        false
+                    )
 
                     messageList.add(newMessage)
                     myAdapter.notifyItemInserted(messageList.size - 1)
@@ -199,6 +202,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         }
 
 
+
     }
 
     private fun showModalDialog(listener: WebSocketListener, view: View) {
@@ -215,7 +219,9 @@ class LiveChat : Fragment(R.layout.livechat) {
             // Dismiss the dialog when OK is clicked
             listener.sendMessage("Conversation Closed", "feedback")
             val editorLayout: LinearLayout = view.findViewById(R.id.editorLayout)
+            val imageView3: ImageView = view.findViewById(R.id.imageView)
             editorLayout.visibility = View.GONE
+            imageView3.visibility = View.GONE
             dialogInterface.dismiss()
         }
 
@@ -248,7 +254,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
     }
 
-    //  funtion to upload image
+    //  function to upload image
     private fun onUpload() {
         val fileDir = requireContext().filesDir
         val fileExtension = imageUri?.let { getFileExtensionFromUri(it) }
@@ -287,7 +293,10 @@ class LiveChat : Fragment(R.layout.livechat) {
         myRecyclerView = view.findViewById(R.id.recyclerView)
         //myRecyclerView.
         myAdapter = ChatAdapter(requireContext(), messageList) { message ->
-            listener.sendMessage(message, "text", isButton = true)
+
+            if (message.toString() == "Like" || message.toString() == "DisLike") likeDisLikePress(
+                message
+            ) else listener.sendMessage(message, "text", isButton = true)
         }
         myRecyclerView.adapter = myAdapter
         myRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -344,49 +353,55 @@ class LiveChat : Fragment(R.layout.livechat) {
 
 
     private fun sendMessageToApi(message: String) {
-        val retrofitBuilder = Retrofit.Builder()
+
+        // Set up OkHttpClient with logging interceptor
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // Log request and response body
+            })
+            .build()
+
+        // Set up Retrofit instance
+        val retrofit = Retrofit.Builder()
             .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiInterface::class.java)
 
+        val apiInterface = retrofit.create(ApiInterface::class.java)
 
         // Create the request body
         val messageRequest = JSONObject().apply {
-            put("feedback", "like")
-            put("instanceId", "772f2b31-14cd-431d-905b-bda1ab8292a0")
-            put("channel_id", "772f2b31-14cd-431d-905b-bda1ab8292a0")
+            put("feedback", message)
+            put("instanceId", chatInstanceId)
+            put("channel_id", channelId)
         }
 
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Log request and response body
-        }
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
+        // Log request data
+        Log.d("API Call", "Request Data: $messageRequest")
 
         // Make the POST request
-        val retrofitData = retrofitBuilder.sendFeedback(messageRequest)
+        val call = apiInterface.sendFeedback(messageRequest)
 
-        retrofitData.enqueue(object : Callback<ResponseBody> {
+        // Enqueue the call to make the request asynchronously
+        call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                println("response sending message........")
                 if (response.isSuccessful) {
-                    // Handle success, e.g., notify the user or update the UI
-                    println("Message sent successfully: ${response.body()}")
+                    // Log successful response
+                    Log.d("API Response", "Message sent successfully: ${response.body()?.string()}")
                 } else {
-                    // Handle the case when the response is not successful
-                    println("Failed to send message: ${response.errorBody()?.string()}")
+                    // Log error response
+                    Log.e("API Error", "Failed to send message: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                // Handle failure, e.g., show a Toast
-                println("Error sending message: ${t.message}")
+                // Log failure case
+                Log.e("API Failure", "Error sending message: ${t.message}")
             }
         })
     }
+
 
     //get instanceId from local
     private fun getInstanceIdFromLocal(): String? {
@@ -404,5 +419,11 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     }
 
+
+    //function to handle like press
+    private fun likeDisLikePress(type: String) {
+        //Log.e("btn Press", type.toString())
+        sendMessageToApi(type)
+    }
 
 }
