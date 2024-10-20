@@ -294,7 +294,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         //myRecyclerView.
         myAdapter = ChatAdapter(requireContext(), messageList) { message ->
 
-            if (message.toString() == "Like" || message.toString() == "DisLike") likeDisLikePress(
+            if (message.toString() == "like" || message.toString() == "dislike") sendMessageToApi(
                 message
             ) else listener.sendMessage(message, "text", isButton = true)
         }
@@ -412,18 +412,18 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     private fun showLoader(view: View, showLoading: Boolean) {
         val loadingGif = view.findViewById<ImageView>(R.id.loadingGif)
+
         if (showLoading) {
             loadingGif.visibility = View.VISIBLE
             Glide.with(view).load(R.drawable.typing).into(loadingGif)
-        } else loadingGif.visibility = View.GONE
 
+            loadingGif.postDelayed({
+                loadingGif.visibility = View.GONE
+            }, 10000) // 10 seconds delay
+        } else {
+            loadingGif.visibility = View.GONE
+        }
     }
 
-
-    //function to handle like press
-    private fun likeDisLikePress(type: String) {
-        //Log.e("btn Press", type.toString())
-        sendMessageToApi(type)
-    }
 
 }

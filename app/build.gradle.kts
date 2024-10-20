@@ -50,5 +50,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation(project(":LiveChat"))
-//    implementation("com.github.janakbastakoti:LiveChat:0.0.4")
+    //implementation("com.github.janakbastakoti:LiveChat:0.0.6")
 }

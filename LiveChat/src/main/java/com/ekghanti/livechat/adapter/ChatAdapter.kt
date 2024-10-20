@@ -131,7 +131,7 @@ class ChatAdapter(
                 ContextCompat.getColor(context, R.color.black), // Replace with your desired color
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
-            onButtonClick("Like");
+            onButtonClick("like");
 
         }
 
@@ -144,7 +144,7 @@ class ChatAdapter(
                 ContextCompat.getColor(context, R.color.black), // Replace with your desired color
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
-            onButtonClick("DisLike");
+            onButtonClick("dislike");
         }
 
         if (currentData?.chatMessage?.displayType == "text") {
