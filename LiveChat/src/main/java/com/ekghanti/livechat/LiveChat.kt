@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.ekghanti.livechat.adapter.ChatAdapter
 import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.ChatData
@@ -115,11 +116,13 @@ class LiveChat : Fragment(R.layout.livechat) {
         titleView.setText(title)
         subTitleView.setText(subTitle)
 
-        //Log.e("local stored:::", getInstanceIdFromLocal().toString())
-
         val listener = WebSocketListener(
             { newMessage ->
                 requireActivity().runOnUiThread {
+                    //    show gif loader
+                    Log.e("on arrive", newMessage.chatMessage.chatSide.toString())
+                    if(newMessage.chatMessage.chatSide.toString() != "incoming") showLoader(view, false)
+
                     messageList.add(newMessage)
                     myAdapter.notifyItemInserted(messageList.size - 1)
                     myRecyclerView.scrollToPosition(messageList.size - 1)
@@ -172,6 +175,9 @@ class LiveChat : Fragment(R.layout.livechat) {
             val textMsg = messageEditor.text.toString()
             val pickedImage: ImageView = view.findViewById(R.id.imageView)
 
+            //    show gif loader
+            showLoader(view, true)
+
             if (uploadedUrl != null) {
                 listener.sendMessage(uploadedUrl!!, "image")
                 clearImageSelection(pickedImage)
@@ -182,7 +188,6 @@ class LiveChat : Fragment(R.layout.livechat) {
                     messageEditor.setText("")
                 }
 
-
             }
 
         }
@@ -192,6 +197,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         imagePicker.setOnClickListener {
             openGallery()
         }
+
 
     }
 
@@ -205,6 +211,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
         // Add an action button
         builder.setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
+            showLoader(view, false)
             // Dismiss the dialog when OK is clicked
             listener.sendMessage("Conversation Closed", "feedback")
             val editorLayout: LinearLayout = view.findViewById(R.id.editorLayout)
@@ -387,5 +394,15 @@ class LiveChat : Fragment(R.layout.livechat) {
             requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("CHAT_INSTANCE_ID", "") ?: ""
     }
+
+    private fun showLoader(view: View, showLoading: Boolean) {
+        val loadingGif = view.findViewById<ImageView>(R.id.loadingGif)
+        if (showLoading) {
+            loadingGif.visibility = View.VISIBLE
+            Glide.with(view).load(R.drawable.typing).into(loadingGif)
+        } else loadingGif.visibility = View.GONE
+
+    }
+
 
 }
