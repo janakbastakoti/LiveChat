@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.ImageButton
@@ -27,9 +28,11 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.ekghanti.livechat.adapter.ChatAdapter
 import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.ChatData
@@ -60,7 +63,7 @@ class LiveChat : Fragment(R.layout.livechat) {
     private var userName: String? = ""
 
     @Volatile
-    private var chatInstanceId: String? = ""
+    private var chatInstanceId: String? = "772f2b31-14cd-431d-905b-bda1ab8292a0"
 
     private var title: String? = null
     private var subTitle: String? = null
@@ -88,6 +91,7 @@ class LiveChat : Fragment(R.layout.livechat) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val scrollView: ScrollView = view.findViewById(R.id.scrollView)
+        val messageEditor: EditText = view.findViewById(R.id.editTextText)
 
         arguments?.let {
             channelId = it.getString("channelId")
@@ -112,18 +116,31 @@ class LiveChat : Fragment(R.layout.livechat) {
         titleView.setText(title)
         subTitleView.setText(subTitle)
 
-        //Log.e("local stored:::", getInstanceIdFromLocal().toString())
-
         val listener = WebSocketListener(
             { newMessage ->
                 requireActivity().runOnUiThread {
+                    //    show gif loader
+                    Log.e("on arrive", newMessage.chatMessage.chatSide.toString())
+                    if (newMessage.chatMessage.chatSide.toString() != "incoming") showLoader(
+                        view,
+                        false
+                    )
+
                     messageList.add(newMessage)
                     myAdapter.notifyItemInserted(messageList.size - 1)
                     myRecyclerView.scrollToPosition(messageList.size - 1)
+
                     scrollView.post {
                         scrollView.fullScroll(View.FOCUS_DOWN)
                     }
+
+                    messageEditor.postDelayed({
+                        messageEditor.requestFocus()
+
+                    }, 100)
+
                 }
+
             },
             chatInstanceId = chatInstanceId.toString(),
             //chatInstanceId = getInstanceIdFromLocal().toString(),
@@ -136,11 +153,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         setupRecyclerView(view, listener)
         loadData(channelId.toString())
 
-        // Click me button
-        //val button: Button = view.findViewById(R.id.clickMeBtn)
-        //button.setOnClickListener {
-        //    listener.onClickMe()
-        //}
+
 
 
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -160,10 +173,13 @@ class LiveChat : Fragment(R.layout.livechat) {
 
         // Send message button click
         val sendButton: ImageButton = view.findViewById(R.id.sendMessageButton)
-        val messageEditor: EditText = view.findViewById(R.id.editTextText)
+
         sendButton.setOnClickListener {
             val textMsg = messageEditor.text.toString()
             val pickedImage: ImageView = view.findViewById(R.id.imageView)
+
+            //    show gif loader
+            showLoader(view, true)
 
             if (uploadedUrl != null) {
                 listener.sendMessage(uploadedUrl!!, "image")
@@ -174,6 +190,7 @@ class LiveChat : Fragment(R.layout.livechat) {
                     messageEditor.requestFocus()
                     messageEditor.setText("")
                 }
+
             }
 
         }
@@ -183,6 +200,8 @@ class LiveChat : Fragment(R.layout.livechat) {
         imagePicker.setOnClickListener {
             openGallery()
         }
+
+
 
     }
 
@@ -196,10 +215,13 @@ class LiveChat : Fragment(R.layout.livechat) {
 
         // Add an action button
         builder.setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
+            showLoader(view, false)
             // Dismiss the dialog when OK is clicked
             listener.sendMessage("Conversation Closed", "feedback")
             val editorLayout: LinearLayout = view.findViewById(R.id.editorLayout)
+            val imageView3: ImageView = view.findViewById(R.id.imageView)
             editorLayout.visibility = View.GONE
+            imageView3.visibility = View.GONE
             dialogInterface.dismiss()
         }
 
@@ -232,7 +254,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
     }
 
-    //  funtion to upload image
+    //  function to upload image
     private fun onUpload() {
         val fileDir = requireContext().filesDir
         val fileExtension = imageUri?.let { getFileExtensionFromUri(it) }
@@ -271,7 +293,10 @@ class LiveChat : Fragment(R.layout.livechat) {
         myRecyclerView = view.findViewById(R.id.recyclerView)
         //myRecyclerView.
         myAdapter = ChatAdapter(requireContext(), messageList) { message ->
-            listener.sendMessage(message, "text", isButton = true)
+
+            if (message.toString() == "Like" || message.toString() == "DisLike") likeDisLikePress(
+                message
+            ) else listener.sendMessage(message, "text", isButton = true)
         }
         myRecyclerView.adapter = myAdapter
         myRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -300,7 +325,7 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     //function to api call
     private fun loadData(id: String) {
-        Log.e("api call", "error entering...")
+        Log.e("api call", "error entering... ${id}")
         val retrofitBuilder = Retrofit.Builder()
             .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -328,55 +353,77 @@ class LiveChat : Fragment(R.layout.livechat) {
 
 
     private fun sendMessageToApi(message: String) {
-        val retrofitBuilder = Retrofit.Builder()
+
+        // Set up OkHttpClient with logging interceptor
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // Log request and response body
+            })
+            .build()
+
+        // Set up Retrofit instance
+        val retrofit = Retrofit.Builder()
             .baseUrl("https://chat.orbit360.cx:8443/chatStorageWhook/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiInterface::class.java)
 
+        val apiInterface = retrofit.create(ApiInterface::class.java)
 
         // Create the request body
         val messageRequest = JSONObject().apply {
-            put("feedback", "like")
-            put("instanceId", "772f2b31-14cd-431d-905b-bda1ab8292a0")
-            put("channel_id", "772f2b31-14cd-431d-905b-bda1ab8292a0")
+            put("feedback", message)
+            put("instanceId", chatInstanceId)
+            put("channel_id", channelId)
         }
 
-        val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Log request and response body
-        }
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .build()
+        // Log request data
+        Log.d("API Call", "Request Data: $messageRequest")
 
         // Make the POST request
-        val retrofitData = retrofitBuilder.sendFeedback(messageRequest)
+        val call = apiInterface.sendFeedback(messageRequest)
 
-        retrofitData.enqueue(object : Callback<ResponseBody> {
+        // Enqueue the call to make the request asynchronously
+        call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                println("response sending message........")
                 if (response.isSuccessful) {
-                    // Handle success, e.g., notify the user or update the UI
-                    println("Message sent successfully: ${response.body()}")
+                    // Log successful response
+                    Log.d("API Response", "Message sent successfully: ${response.body()?.string()}")
                 } else {
-                    // Handle the case when the response is not successful
-                    println("Failed to send message: ${response.errorBody()?.string()}")
+                    // Log error response
+                    Log.e("API Error", "Failed to send message: ${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                // Handle failure, e.g., show a Toast
-                println("Error sending message: ${t.message}")
+                // Log failure case
+                Log.e("API Failure", "Error sending message: ${t.message}")
             }
         })
     }
+
 
     //get instanceId from local
     private fun getInstanceIdFromLocal(): String? {
         val sharedPreferences =
             requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         return sharedPreferences.getString("CHAT_INSTANCE_ID", "") ?: ""
+    }
+
+    private fun showLoader(view: View, showLoading: Boolean) {
+        val loadingGif = view.findViewById<ImageView>(R.id.loadingGif)
+        if (showLoading) {
+            loadingGif.visibility = View.VISIBLE
+            Glide.with(view).load(R.drawable.typing).into(loadingGif)
+        } else loadingGif.visibility = View.GONE
+
+    }
+
+
+    //function to handle like press
+    private fun likeDisLikePress(type: String) {
+        //Log.e("btn Press", type.toString())
+        sendMessageToApi(type)
     }
 
 }
