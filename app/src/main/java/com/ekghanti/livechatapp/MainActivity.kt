@@ -58,48 +58,34 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Create an instance of LiveChat (BottomSheetDialogFragment)
-            val liveChatBottomSheet = LiveChat()
-            liveChatBottomSheet.arguments = bundle
-
-
-            // Wait for the fragment to be displayed and then adjust the height
-            liveChatBottomSheet.dialog?.setOnShowListener { dialog ->
-                val bottomSheetDialog = dialog as BottomSheetDialog
-                val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-                bottomSheet?.let {
-                    val behavior = BottomSheetBehavior.from(it)
-
-                    // Get the screen height
-                    val displayMetrics = resources.displayMetrics
-                    val screenHeight = displayMetrics.heightPixels
-
-                    // Calculate the height as full height minus 10dp
-                    val topPaddingInPx = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        10f,
-                        resources.displayMetrics
-                    ).toInt()
-
-                    // Set the layout height to full screen height minus 10dp
-                    it.layoutParams.height = screenHeight - topPaddingInPx
-                    it.layoutParams = it.layoutParams
-
-                    // Expand the bottom sheet
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
+            val liveChatBottomSheet = LiveChat().apply {
+                arguments = bundle
             }
 
             // Show the BottomSheetDialogFragment
             liveChatBottomSheet.show(supportFragmentManager, liveChatBottomSheet.tag)
 
+            // Wait for the fragment to be displayed and then adjust the height
+            liveChatBottomSheet.dialog?.setOnShowListener { dialog ->
+                val bottomSheetDialog = dialog as BottomSheetDialog
+                val bottomSheet = bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
 
+                bottomSheet?.let {
+                    // Set the bottom sheet to be full height
+                    val layoutParams = it.layoutParams
+                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT // Set to full height
+                    it.layoutParams = layoutParams
 
+                    // Optional: Set a background color if needed
+                    // it.setBackgroundColor(Color.WHITE)
 
-
-
-
-
+                    // Expand the bottom sheet
+                    BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
         }
+
+
 
 
 
