@@ -38,6 +38,7 @@ import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.ChatData
 import com.ekghanti.livechat.model.chat.Message
 import com.ekghanti.livechat.socket.WebSocketListener
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -58,7 +59,7 @@ import java.io.FileOutputStream
 
 import okhttp3.logging.HttpLoggingInterceptor
 
-class LiveChat : Fragment(R.layout.livechat) {
+class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
     private var channelId: String? = null
     private var userName: String? = ""
 
@@ -424,6 +425,8 @@ class LiveChat : Fragment(R.layout.livechat) {
             loadingGif.visibility = View.GONE
         }
     }
+
+
 
 
 }
