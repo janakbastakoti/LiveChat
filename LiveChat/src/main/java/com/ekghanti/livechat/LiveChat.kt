@@ -68,6 +68,7 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
 
     private var title: String? = null
     private var subTitle: String? = null
+    private var botIcon: Int? = null
 
     private lateinit var webSocket: WebSocket
     private lateinit var myRecyclerView: RecyclerView
@@ -99,23 +100,23 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
             title = it.getString("title")
             subTitle = it.getString("subTitle")
         }
-        val icon = arguments?.getInt("icon")
+        botIcon = arguments?.getInt("icon")
 
         val actionBar = (activity as AppCompatActivity).supportActionBar
         actionBar?.hide()
 
-        val titleView: TextView = view.findViewById(R.id.title)
-        val subTitleView: TextView = view.findViewById(R.id.subTitle)
-        val iconView: ImageView = view.findViewById(R.id.iconImage)
-
-        if (icon != null) {
-            iconView.setImageResource(icon)
-        } else {
-            iconView.setImageResource(R.drawable.chat_icon)
-        }
-
-        titleView.setText(title)
-        subTitleView.setText(subTitle)
+        //val titleView: TextView = view.findViewById(R.id.title)
+        //val subTitleView: TextView = view.findViewById(R.id.subTitle)
+        //val iconView: ImageView = view.findViewById(R.id.iconImage)
+        //
+        //if (icon != null) {
+        //    iconView.setImageResource(icon)
+        //} else {
+        //    iconView.setImageResource(R.drawable.chat_icon)
+        //}
+        //
+        //titleView.setText(title)
+        //subTitleView.setText(subTitle)
 
         val listener = WebSocketListener(
             { newMessage ->
@@ -202,6 +203,7 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
             openGallery()
         }
 
+        getBotDetails(view, "1")
 
 
     }
@@ -353,6 +355,65 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
     }
 
 
+    //get bot info api
+    private fun getBotDetails(view: View, id: String) {
+
+        // Set up OkHttpClient with logging interceptor
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // Log request and response body
+            })
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://jsonplaceholder.typicode.com/todos/") // Base URL of your API
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create()) // Add Gson converter to parse JSON
+            .build()
+
+        // Create the ApiInterface instance
+        val apiInterface = retrofit.create(ApiInterface::class.java)
+
+        // Make the network call asynchronously
+        val call = apiInterface.getBotInfo(id)
+
+        // Enqueue the call to run in the background
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    // Handle the successful response here
+                    val responseBody = response.body()?.string()
+                    println("Response: $responseBody")
+
+
+                    val titleView: TextView = view.findViewById(R.id.title)
+                    val subTitleView: TextView = view.findViewById(R.id.subTitle)
+                    val iconView: ImageView = view.findViewById(R.id.iconImage)
+
+                    if (botIcon != null) {
+                        iconView.setImageResource(botIcon!!)
+                    }
+
+                    titleView.setText(title)
+                    subTitleView.setText(subTitle)
+
+                    // You can further process responseBody here, like converting it to your model
+                } else {
+                    // Handle the error response
+                    println("Error: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                // Handle failure scenario, like network issues
+                println("Failure: ${t.message}")
+            }
+        })
+
+
+    }
+
+
     private fun sendMessageToApi(message: String) {
 
         // Set up OkHttpClient with logging interceptor
@@ -425,8 +486,6 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
             loadingGif.visibility = View.GONE
         }
     }
-
-
 
 
 }

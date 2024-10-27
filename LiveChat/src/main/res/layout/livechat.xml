@@ -35,7 +35,7 @@
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chat360 Bot"
+                android:text=""
                 android:textColor="@color/headerTitle"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -44,7 +44,7 @@
                 android:id="@+id/subTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hello There!"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
