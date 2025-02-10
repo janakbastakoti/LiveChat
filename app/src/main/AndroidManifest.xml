@@ -18,12 +18,12 @@
         <activity
             android:name=".ChatScreen"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
             />
         <activity
             android:name=".PageTwo"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
              />
         <activity
             android:name=".PageOne"

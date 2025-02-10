@@ -21,7 +21,7 @@ class PageOne : AppCompatActivity() {
         }
 
         val bundle = Bundle()
-        bundle.putString("BaseUrl", "https://chat.orbit360.cx:8443/chat/772f2b31-14cd-431d-905b-bda1ab8292a0")
+        bundle.putString("BaseUrl", "https://chat.orbit360.cx:8443/chat/fd0600bb-582c-4143-b764-06f75ff38991")
         val liveChatWebviewFragment = LiveChatWebview()
         liveChatWebviewFragment.arguments = bundle
         val fragmentManager = supportFragmentManager

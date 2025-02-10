@@ -64,7 +64,7 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
     private var userName: String? = ""
 
     @Volatile
-    private var chatInstanceId: String? = "772f2b31-14cd-431d-905b-bda1ab8292a0"
+    private var chatInstanceId: String? = ""
 
     private var title: String? = null
     private var subTitle: String? = null
@@ -310,6 +310,7 @@ class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
         val client = OkHttpClient()
         val request: Request = Request.Builder().url("wss://chat.orbit360.cx:8443/").build()
         webSocket = client.newWebSocket(request, listener)
+        Log.e("socket status", request.toString())
     }
 
     private fun openGallery() {

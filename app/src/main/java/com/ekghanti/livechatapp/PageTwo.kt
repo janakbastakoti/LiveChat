@@ -20,7 +20,7 @@ class PageTwo : AppCompatActivity() {
         }
 
         val bundle = Bundle()
-        bundle.putString("channelId", "772f2b31-14cd-431d-905b-bda1ab8292a0")
+        bundle.putString("channelId", "fd0600bb-582c-4143-b764-06f75ff38991")
         bundle.putString("title", "Chat Bot New")
         bundle.putString("subTitle", "Hello world!")
         bundle.putInt("icon", R.drawable.logo)
