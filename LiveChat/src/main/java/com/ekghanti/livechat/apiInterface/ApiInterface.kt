@@ -26,8 +26,6 @@ interface ApiInterface {
         "Accept: */*",
         "Content-Type: application/json"
     )
-    //@GET("d5d894f4-2e2e-481e-9067-8062db83d0d7")
-    //fun getData(): Call<ChatData>
 
     @GET("{id}")
     fun getData(@Path("id") id: String): Call<ChatData>
@@ -42,4 +40,7 @@ interface ApiInterface {
     fun sendFeedback(@Body messageRequest: JSONObject): Call<ResponseBody> // Use the appropriate response type
 
 
+    //
+    @GET("{id}") // Specify your POST endpoint here
+    fun getBotInfo(@Path("id") id: String): Call<ResponseBody>
 }

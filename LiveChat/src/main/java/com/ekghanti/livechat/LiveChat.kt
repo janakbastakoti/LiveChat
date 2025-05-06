@@ -38,6 +38,7 @@ import com.ekghanti.livechat.apiInterface.ApiInterface
 import com.ekghanti.livechat.model.chat.ChatData
 import com.ekghanti.livechat.model.chat.Message
 import com.ekghanti.livechat.socket.WebSocketListener
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.squareup.picasso.Picasso
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -58,15 +59,16 @@ import java.io.FileOutputStream
 
 import okhttp3.logging.HttpLoggingInterceptor
 
-class LiveChat : Fragment(R.layout.livechat) {
+class LiveChat : BottomSheetDialogFragment(R.layout.livechat) {
     private var channelId: String? = null
     private var userName: String? = ""
 
     @Volatile
-    private var chatInstanceId: String? = "772f2b31-14cd-431d-905b-bda1ab8292a0"
+    private var chatInstanceId: String? = ""
 
     private var title: String? = null
     private var subTitle: String? = null
+    private var botIcon: Int? = null
 
     private lateinit var webSocket: WebSocket
     private lateinit var myRecyclerView: RecyclerView
@@ -98,23 +100,23 @@ class LiveChat : Fragment(R.layout.livechat) {
             title = it.getString("title")
             subTitle = it.getString("subTitle")
         }
-        val icon = arguments?.getInt("icon")
+        botIcon = arguments?.getInt("icon")
 
         val actionBar = (activity as AppCompatActivity).supportActionBar
         actionBar?.hide()
 
-        val titleView: TextView = view.findViewById(R.id.title)
-        val subTitleView: TextView = view.findViewById(R.id.subTitle)
-        val iconView: ImageView = view.findViewById(R.id.iconImage)
-
-        if (icon != null) {
-            iconView.setImageResource(icon)
-        } else {
-            iconView.setImageResource(R.drawable.chat_icon)
-        }
-
-        titleView.setText(title)
-        subTitleView.setText(subTitle)
+        //val titleView: TextView = view.findViewById(R.id.title)
+        //val subTitleView: TextView = view.findViewById(R.id.subTitle)
+        //val iconView: ImageView = view.findViewById(R.id.iconImage)
+        //
+        //if (icon != null) {
+        //    iconView.setImageResource(icon)
+        //} else {
+        //    iconView.setImageResource(R.drawable.chat_icon)
+        //}
+        //
+        //titleView.setText(title)
+        //subTitleView.setText(subTitle)
 
         val listener = WebSocketListener(
             { newMessage ->
@@ -201,6 +203,7 @@ class LiveChat : Fragment(R.layout.livechat) {
             openGallery()
         }
 
+        getBotDetails(view, "1")
 
 
     }
@@ -294,7 +297,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         //myRecyclerView.
         myAdapter = ChatAdapter(requireContext(), messageList) { message ->
 
-            if (message.toString() == "Like" || message.toString() == "DisLike") likeDisLikePress(
+            if (message.toString() == "like" || message.toString() == "dislike") sendMessageToApi(
                 message
             ) else listener.sendMessage(message, "text", isButton = true)
         }
@@ -307,6 +310,7 @@ class LiveChat : Fragment(R.layout.livechat) {
         val client = OkHttpClient()
         val request: Request = Request.Builder().url("wss://chat.orbit360.cx:8443/").build()
         webSocket = client.newWebSocket(request, listener)
+        Log.e("socket status", request.toString())
     }
 
     private fun openGallery() {
@@ -349,6 +353,65 @@ class LiveChat : Fragment(R.layout.livechat) {
                 // Handle the failure
             }
         })
+    }
+
+
+    //get bot info api
+    private fun getBotDetails(view: View, id: String) {
+
+        // Set up OkHttpClient with logging interceptor
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY // Log request and response body
+            })
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://jsonplaceholder.typicode.com/todos/") // Base URL of your API
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create()) // Add Gson converter to parse JSON
+            .build()
+
+        // Create the ApiInterface instance
+        val apiInterface = retrofit.create(ApiInterface::class.java)
+
+        // Make the network call asynchronously
+        val call = apiInterface.getBotInfo(id)
+
+        // Enqueue the call to run in the background
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    // Handle the successful response here
+                    val responseBody = response.body()?.string()
+                    println("Response: $responseBody")
+
+
+                    val titleView: TextView = view.findViewById(R.id.title)
+                    val subTitleView: TextView = view.findViewById(R.id.subTitle)
+                    val iconView: ImageView = view.findViewById(R.id.iconImage)
+
+                    if (botIcon != null) {
+                        iconView.setImageResource(botIcon!!)
+                    }
+
+                    titleView.setText(title)
+                    subTitleView.setText(subTitle)
+
+                    // You can further process responseBody here, like converting it to your model
+                } else {
+                    // Handle the error response
+                    println("Error: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                // Handle failure scenario, like network issues
+                println("Failure: ${t.message}")
+            }
+        })
+
+
     }
 
 
@@ -412,18 +475,18 @@ class LiveChat : Fragment(R.layout.livechat) {
 
     private fun showLoader(view: View, showLoading: Boolean) {
         val loadingGif = view.findViewById<ImageView>(R.id.loadingGif)
+
         if (showLoading) {
             loadingGif.visibility = View.VISIBLE
             Glide.with(view).load(R.drawable.typing).into(loadingGif)
-        } else loadingGif.visibility = View.GONE
 
+            loadingGif.postDelayed({
+                loadingGif.visibility = View.GONE
+            }, 10000) // 10 seconds delay
+        } else {
+            loadingGif.visibility = View.GONE
+        }
     }
 
-
-    //function to handle like press
-    private fun likeDisLikePress(type: String) {
-        //Log.e("btn Press", type.toString())
-        sendMessageToApi(type)
-    }
 
 }

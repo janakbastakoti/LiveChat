@@ -55,7 +55,7 @@ class WebSocketListener(
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         super.onFailure(webSocket, t, response)
-        Log.e("failure", "failure is received")
+        Log.e("failure", "failure is received ${response.toString()}")
     }
 
     fun sendMessage(message: String, type: String, isButton: Boolean = false) {
@@ -76,6 +76,7 @@ class WebSocketListener(
             put("type", if (type == "feedback") "text" else type)
         }
 
+        Log.e("msg", msg.toString())
 
         if (type == "feedback") {
             closeWebSocket()
